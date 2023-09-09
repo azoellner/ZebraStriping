@@ -1,0 +1,12 @@
+[
+  {
+    "namespace": "zebra_az",
+    "functions": [
+      {
+        "name": "init",
+        "type": "function",
+        "parameters": []
+      }
+    ]
+  }
+]

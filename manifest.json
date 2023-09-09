@@ -1,0 +1,33 @@
+{
+  "manifest_version": 2,
+  "name": "__MSG_extensionName__",
+  "description": "__MSG_extensionDescription__",
+  "version": "1.0",
+  "author": "Andreas Zöllner",
+  "default_locale": "en",
+  "applications": {
+    "gecko": {
+      "id": "zebra@az",
+      "strict_min_version": "63.0",
+      "strict_max_version": "115.*"
+    }
+  },
+  "experiment_apis": {
+    "zebra_az": {
+      "schema": "schema.json",
+      "parent": {
+        "scopes": ["addon_parent"],
+        "paths": [["zebra_az"]],
+        "script": "js/implementation.js"
+      }
+    }
+  },
+  "background": {
+    "scripts": ["js/background.js"]
+  },
+  "icons": {
+    "16": "images/zebra_16.png",
+    "32": "images/zebra_32.png",
+    "64": "images/zebra_64.png"
+  }
+}
