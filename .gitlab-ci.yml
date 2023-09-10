@@ -1,0 +1,9 @@
+variables:
+  COMPOSE_PROJECT_NAME: "$CI_JOB_ID"
+
+stages:
+  - testing
+
+job_test_pre-commit:
+  stage: testing
+  script: pre-commit run --all
