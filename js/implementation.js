@@ -48,14 +48,36 @@ const addStyleElementToHeader = (tree) => {
     return css.sheet;
 };
 
+const doZebraStriping = (window, elementId, cssRules) => {
+    "use strict";
+    // Thunderbird 115 takes a while for the HTML elements to load,
+    // hence retry until the desired one is found.
+    let intervalId = window.setInterval(() => {
+        const tree = findElementById(window, elementId);
+        if (tree !== null) {
+            try {
+                const sheet = addStyleElementToHeader(tree);
+                for (const rule of cssRules) {
+                    sheet.insertRule(rule);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+
+            if (intervalId !== undefined) {
+                window.clearInterval(intervalId);
+                intervalId = undefined;
+            }
+        }
+    }, 1000);
+};
+
 this.zebra_az = class extends ExtensionCommon.ExtensionAPI {
     getAPI(context) {
         context.callOnClose(this);
         return {
             zebra_az: {
                 init() {
-                    let updateFolderTreeIntervalID; // eslint-disable-line init-declarations
-                    let updateThreadTreeIntervalID; // eslint-disable-line init-declarations
                     ExtensionSupport.registerWindowListener(EXTENSION_ID, {
                         // Before Thunderbird 74, messenger.xhtml was messenger.xul
                         chromeURLs: [
@@ -63,90 +85,48 @@ this.zebra_az = class extends ExtensionCommon.ExtensionAPI {
                             "chrome://messenger/content/messenger.xul",
                         ],
                         onLoadWindow(window) {
-                            const TIMEOUT = 1000;
-
-                            // Thunderbird 115 takes a while for the folderTree to load, so retry until it is found.
-                            updateFolderTreeIntervalID = window.setInterval(() => {
-                                const tree = findElementById(window, "folderTree");
-                                if (tree !== null) {
-                                    try {
-                                        const sheet = addStyleElementToHeader(tree);
-                                        for (const rule of [
-                                            // The color for selected needs to be enforced for striped lines,
-                                            // and changed to contrast with striped lines
-                                            `
+                            doZebraStriping(window, "folderTree", [
+                                // The color for selected needs to be enforced for striped lines,
+                                // and changed to contrast with striped lines
+                                `
 li.selected > .container {
     background-color: ${FOLDER_TREE.selectedColor};
 }
 `,
-                                            // The color for hovering needs to be changed to contrast with striping
-                                            `
+                                // The color for hovering needs to be changed to contrast with striping
+                                `
 li:not(.selected) > .container:hover {
     background-color: ${FOLDER_TREE.hoverColor};
 }
 `,
-                                            // And here's the zebra striping
-                                            `
+                                // And here's the zebra striping
+                                `
 li:nth-child(${FOLDER_TREE.oddOrEven}) > .container {
     background-color: ${FOLDER_TREE.zebraColor};
 }
 `,
-                                        ]) {
-                                            sheet.insertRule(rule);
-                                        }
-                                    } catch (error) {
-                                        console.error(error);
-                                    }
-
-                                    if (updateFolderTreeIntervalID !== undefined) {
-                                        window.clearInterval(
-                                            updateFolderTreeIntervalID
-                                        );
-                                        updateFolderTreeIntervalID = undefined;
-                                    }
-                                }
-                            }, TIMEOUT);
-
-                            updateThreadTreeIntervalID = window.setInterval(() => {
-                                const tree = findElementById(window, "threadTree");
-                                if (tree !== null) {
-                                    try {
-                                        const sheet = addStyleElementToHeader(tree);
-                                        for (const rule of [
-                                            // The color for selected needs to be enforced for striped lines,
-                                            // and changed to contrast with striping
-                                            `
+                            ]);
+                            doZebraStriping(window, "threadTree", [
+                                // The color for selected needs to be enforced for striped lines,
+                                // and changed to contrast with striping
+                                `
 [is="tree-view-table-body"] > tr[is="thread-row"].selected {
     background-color: ${THREAD_TREE.selectedColor};
 }
 `,
-                                            // The color for hovering needs to be enforced for striped lines
-                                            `
+                                // The color for hovering needs to be enforced for striped lines
+                                `
 [is="tree-view-table-body"] tr[is="thread-row"]:hover {
     background-color: ${THREAD_TREE.hoverColor};
 }
 `,
-                                            // And here's the zebra striping
-                                            `
+                                // And here's the zebra striping
+                                `
 [is="tree-view-table-body"] tr[is="thread-row"]:nth-child(${THREAD_TREE.oddOrEven}) {
     background-color: ${THREAD_TREE.zebraColor};
 }
 `,
-                                        ]) {
-                                            sheet.insertRule(rule);
-                                        }
-                                    } catch (error) {
-                                        console.error(error);
-                                    }
-
-                                    if (updateThreadTreeIntervalID !== undefined) {
-                                        window.clearInterval(
-                                            updateThreadTreeIntervalID
-                                        );
-                                        updateThreadTreeIntervalID = undefined;
-                                    }
-                                }
-                            }, TIMEOUT);
+                            ]);
                         },
                     });
                 },
