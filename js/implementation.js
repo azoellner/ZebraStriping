@@ -1,9 +1,9 @@
-const {ExtensionCommon} = ChromeUtils.import(
-    "resource://gre/modules/ExtensionCommon.jsm"
+const {ExtensionCommon} = ChromeUtils.importESModule(
+    "resource://gre/modules/ExtensionCommon.sys.mjs"
 );
 
-const {ExtensionSupport} = ChromeUtils.import(
-    "resource:///modules/ExtensionSupport.jsm"
+const {ExtensionSupport} = ChromeUtils.importESModule(
+    "resource:///modules/ExtensionSupport.sys.mjs"
 );
 
 const EXTENSION_ID = "zebra@az";
@@ -11,8 +11,8 @@ const EXTENSION_ID = "zebra@az";
 const FOLDER_TREE = {
     hoverColor: "var(--listbox-hover)",
     oddOrEven: "odd",
-    selectedColor: "#D0D0D0",
-    zebraColor: "#F0F0F0",
+    selectedColor: "#C0C0C0",
+    zebraColor: "#E0E0E0",
 };
 const THREAD_TREE = {
     hoverColor: "var(--listbox-hover)",

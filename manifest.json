@@ -8,8 +8,8 @@
   "applications": {
     "gecko": {
       "id": "zebra@az",
-      "strict_min_version": "63.0",
-      "strict_max_version": "115.*"
+      "strict_min_version": "137.0",
+      "strict_max_version": "199.*"
     }
   },
   "experiment_apis": {
